@@ -4,6 +4,10 @@ import guru.springframework.domain.*;
 import guru.springframework.repositories.CategoryRepository;
 import guru.springframework.repositories.RecipeRepository;
 import guru.springframework.repositories.UnitOfMeasureRepository;
+import javax.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
+import org.hibernate.Session;
+import org.hibernate.SessionBuilder;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
@@ -16,6 +20,7 @@ import java.util.Optional;
 /**
  * Created by jt on 6/13/17.
  */
+@Slf4j
 @Component
 public class RecipeBootstrap implements ApplicationListener<ContextRefreshedEvent> {
 
@@ -29,6 +34,7 @@ public class RecipeBootstrap implements ApplicationListener<ContextRefreshedEven
         this.unitOfMeasureRepository = unitOfMeasureRepository;
     }
 
+    @Transactional
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
         recipeRepository.saveAll(getRecipes());
@@ -118,6 +124,8 @@ public class RecipeBootstrap implements ApplicationListener<ContextRefreshedEven
                 "\n" +
                 "Read more: http://www.simplyrecipes.com/recipes/perfect_guacamole/#ixzz4jvpiV9Sd");
 
+        recipeRepository.save(guacRecipe);
+
         Notes guacNotes = new Notes();
         guacNotes.setRecipeNotes("For a very quick guacamole just take a 1/4 cup of salsa and mix it in with your mashed avocados.\n" +
                 "Feel free to experiment! One classic Mexican guacamole has pomegranate seeds and chunks of peaches in it (a Diana Kennedy favorite). Try guacamole with added pineapple, mango, or strawberries.\n" +
@@ -128,6 +136,8 @@ public class RecipeBootstrap implements ApplicationListener<ContextRefreshedEven
                 "Read more: http://www.simplyrecipes.com/recipes/perfect_guacamole/#ixzz4jvoun5ws");
         guacNotes.setRecipe(guacRecipe);
         guacRecipe.setNotes(guacNotes);
+
+        log.debug("Hash: " + guacRecipe.hashCode());
 
         guacRecipe.getIngredients().add(new Ingredient("ripe avocados", new BigDecimal(2), eachUom, guacRecipe));
         guacRecipe.getIngredients().add(new Ingredient("Kosher salt", new BigDecimal(".5"), teapoonUom, guacRecipe));
