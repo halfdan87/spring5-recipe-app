@@ -67,6 +67,6 @@ public class IndexControllerTest {
         verify(mockModel, times(1)).addAttribute(eq("recipes"), argumentCaptor.capture());
 
         Set<Recipe> value = argumentCaptor.getValue();
-        assertEquals(1, value.size());
+        assertEquals(2, value.size());
     }
 }
